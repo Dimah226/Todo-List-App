@@ -54,10 +54,14 @@ const toggleScreen = () => {
 const updateTotals = () => {
   const categoryTasks = tasks.filter(
     (task) =>
-      task.category.toLowerCase() === selectedCategory.title.toLowerCase()
+      task.category.toLowerCase() === selectedCategory.title.toLowerCase() && task.completed===false
   );
   numTasks.innerHTML = `${categoryTasks.length} Tasks`;
-  totalTasks.innerHTML = tasks.length;
+  const undoTasks = tasks.filter(
+    (task) =>
+      task.completed === false
+  );
+  totalTasks.innerHTML = undoTasks.length;
 };
 
 const renderCategories = () => {
@@ -66,6 +70,10 @@ const renderCategories = () => {
   categories.forEach((category) => {
     const categoryTasks = tasks.filter(
       (task) => task.category.toLowerCase() === category.title.toLowerCase()
+    );
+
+    const undoTasks = tasks.filter(
+      (task) => task.category.toLowerCase() === category.title.toLowerCase() && task.completed===false
     );
     if (categoryTasks.length>0){
     const div = document.createElement("div");
@@ -86,7 +94,7 @@ const renderCategories = () => {
                   />
                 <div class="content">
                   <h1>${category.title}</h1>
-                  <p>${categoryTasks.length} Tasks</p>
+                  <p>${undoTasks.length} Tasks</p>
                 </div>
               </div>
               <div class="options">
@@ -110,6 +118,7 @@ const renderCategories = () => {
     `;
 
     categoriesContainer.appendChild(div);
+    updateTotals()
     }
   });
 };
@@ -138,6 +147,7 @@ const renderTasks = () => {
         const index = tasks.findIndex((t) => t.id === task.id);
         tasks[index].completed = !tasks[index].completed;
         saveLocal();
+        updateTotals()
       });
       div.innerHTML = `
       <div class="delete">
